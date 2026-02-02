@@ -1,4 +1,5 @@
 import pygame, sys
+import Choosing_troops
 
 display = pygame.display.set_mode((800,600))
 background = pygame.image.load("image/Backgrounds/CmBkGrMt.png").convert_alpha()
@@ -24,11 +25,15 @@ pygame.mouse.set_cursor(cursor)
 Pikeman_goes_rect[0] = 90
 Pikeman_goes_rect[1] = 325
 
+troops = Choosing_troops.start_selecting_troops(display)
+print(troops)
+
 while True:
     display.blit(panel,(0,0))
     display.blit(background,(0,0))
     display.blit(grid,(70,100))
-    display.blit(Pikeman_goes,(Pikeman_goes_rect[0] - Pikeman_goes_rect[2] / 2, Pikeman_goes_rect[1] - Pikeman_goes_rect[3]))
+    display.blit(Pikeman_goes,(Pikeman_goes_rect[0] - Pikeman_goes_rect[2] / 2, Pikeman_goes_rect[1] - Pikeman_goes_rect[3]))   # Поскольку координаты расчитываются от левого верхнего края картинки, то мы меняем эту точку
+
 
     mouse_points = pygame.mouse.get_pos()
 
