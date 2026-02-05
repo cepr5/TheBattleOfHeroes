@@ -1,3 +1,4 @@
+# Данный код отвечает за окно выбора войск перед игрой
 import pygame, sys
 
 pygame.init()
@@ -27,7 +28,7 @@ text_plater2 = font.render("Player 2", True, (244, 244, 244))
 
 text_quantity = font.render("Количество:", True, (244, 244, 244))
 
-def start_selecting_troops(display):
+def start_selecting_troops(display, Units):
     global selection_panel_click
     global current_city
     global current_unit
@@ -66,7 +67,7 @@ def start_selecting_troops(display):
         if go_continue.rect.collidepoint(mouse):
             go_continue.choice_render(display)
             if mouse_button(events):
-                go_continue.click()
+                go_continue.click(Units)
 
         if selection_panel_click is not None:
             selection_panel_click.quantity = quantity.numbers
@@ -116,6 +117,7 @@ def renderer(display):
     # if selection_panel_click is not None:
     #     selection_panel_click.click_render(display)
 
+# Панель выбранных войск слева
 class PlayersArmy:
     def __init__(self, x, y):
         self.x = x
@@ -134,6 +136,7 @@ class PlayersArmy:
             display.blit(background_quantity,(self.x,self.y + 53))
             display.blit(font2.render(self.quantity, True, (244, 244, 244)), (self.x + 3,self.y + 50))
 
+# Города справа
 class City:
     def __init__(self, x, y, img, img_list, army_list):
         self.x = x
@@ -149,6 +152,7 @@ class City:
     def blit_army_list(self, display):
         display.blit(self.img_list, (500, 20))
 
+# Лист выбора армии справа (дополнительно отображает и панельку характеристик войск)
 class ArmyList:
     def __init__(self, x, y, unit_characteristics = None, image = None, name = None, feature = None, back = False):
         self.x = x
@@ -170,6 +174,7 @@ class ArmyList:
                 selection_panel_click.image = self.image
                 selection_panel_click.name = self.name
 
+# Поле для ввода количества
 class Quantity:
     def __init__(self, img_quantity):
         self.x = 300
@@ -256,7 +261,7 @@ class Quantity:
                     else:
                         self.numbers = self.numbers[:-1]
 
-
+# Кнопка "продолжить"
 class Continue:
     def __init__(self, text, img_choice):
         self.x = 630
@@ -269,11 +274,16 @@ class Continue:
         display.blit(self.text,(self.x + 5,self.y))
     def choice_render(self,display):
         display.blit(self.img_choice,(self.x,self.y))
-    def click(self):
+    def click(self, Units):
         global is_continue
+        counter = 0
         for ar in army:
-            troops.append((ar.name,ar.quantity))
-            is_continue = True
+            counter += 1
+            if counter > 7:
+                troops.append(Units(ar.name, ar.quantity, is_player2 = True))
+            else:
+                troops.append(Units(ar.name,ar.quantity))
+        is_continue = True
 
 army = [PlayersArmy(10, 46), PlayersArmy(75, 46), PlayersArmy(140, 46), PlayersArmy(206, 46), PlayersArmy(272, 46), PlayersArmy(338, 46), PlayersArmy(405, 46),
         PlayersArmy(10, 165), PlayersArmy(75, 165), PlayersArmy(140, 165), PlayersArmy(206, 165), PlayersArmy(272, 165), PlayersArmy(338, 165), PlayersArmy(405, 165)]
@@ -307,7 +317,7 @@ inferno_army = [ArmyList(500, 20, pygame.image.load("image/unit_characteristics/
                ArmyList(500, 330, pygame.image.load("image/unit_characteristics/inferno/Efreet.png"), pygame.image.load("image/icon_units/Inferno/Efreet.png"),"Efreet", "Иммунитет к огню, ненависть к джиннам"),
                ArmyList(500, 361, pygame.image.load("image/unit_characteristics/inferno/Efreet_sultan.png"), pygame.image.load("image/icon_units/Inferno/Efreet_sultan.png"),"Efreet_sultan", "Огненный щит, иммунитет к огню, ненависть к джиннам"),
                ArmyList(500, 392, pygame.image.load("image/unit_characteristics/inferno/Devil.png"), pygame.image.load("image/icon_units/Inferno/Devil.png"),"Devil", "-1 к удаче противника, враг не отвечает, ненависть к ангелам"),
-               ArmyList(500, 423, pygame.image.load("image/unit_characteristics/inferno/Arch_devil.png"), pygame.image.load("image/icon_units/Inferno/Arch_devil.png"),"Arch_devil", "-1 к удаче противника, враг не отвечает, ненависть к ангелам"),
+               ArmyList(500, 423, pygame.image.load("image/unit_characteristics/inferno/Archdevil.png"), pygame.image.load("image/icon_units/Inferno/Archdevil.png"),"Archdevil", "-1 к удаче противника, враг не отвечает, ненависть к ангелам"),
                ArmyList(500, 454, back = True)]
 
 cities = [City(500, 20, pygame.image.load("image/Choosing_location/Castle.png"), pygame.image.load("image/Choosing_location/Castle_list.png"), castle_army),
