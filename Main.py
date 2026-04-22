@@ -28,9 +28,14 @@ class Map:
         self.rect = pygame.Rect(self.x,self.y,40,39)
         self.mouse_black = pygame.image.load("image/mouse_black.png").convert_alpha()
         self.mouse_black.set_alpha(100)
+        self.current_unit = pygame.image.load("image/current_unit.png").convert()
+        self.current_unit.set_colorkey((255, 255, 255))
         self.unit = None
     def render_mouse_black(self):
         display.blit(self.mouse_black,(self.x,self.y))
+    def render_current_unit(self):
+        if self.unit == current_unit:
+            display.blit(self.current_unit,(self.x,self.y))
 
 map = [[Map(94,102), Map(136,102), Map(178,102), Map(220,102), Map(262,102), Map(304,102), Map(346,102), Map(388,102), Map(430,102), Map(472,102), Map(514,102), Map(556,102), Map(598,102), Map(640,102), Map(682,102)],
        [Map(72,143), Map(114,143), Map(156,143), Map(198,143), Map(240,143), Map(282,143), Map(324,143), Map(366,143), Map(408,143), Map(450,143), Map(492,143), Map(534,143), Map(576,143), Map(618,143), Map(660,143)],
@@ -56,8 +61,6 @@ class Units:
         self.is_player2 = is_player2    # юнит справа? (вражеский?)
 
 troops = Choosing_troops.start_selecting_troops(display, Units)
-for i in troops:
-    print(i.name, i.quantity)
 # нарезка спрайтов и закидывание их в объекты Units
 Slicing_sprites.start(troops)
 Characteristic_unit.start(troops)
@@ -138,6 +141,7 @@ def if_two_cell(unit,m,enemy):
 deploy_troops(troops)
 
 def sort(troops):    # сортирует войска по скорости, при этом чередуя вражеских и союзних юнитов с одинаковой скоростью
+    troops = [unit for unit in troops if unit.name is not None]    # избавляемся от None
     friends = [unit for unit in troops if unit.is_player2 == False]    # разбиваем на две группы
     enemies = [unit for unit in troops if unit.is_player2 == True]
     friends = sorted(friends, key=lambda x: x.speed, reverse=True)    # сортируем каждую группу
@@ -179,16 +183,16 @@ while True:
 
     for line in map:
         for index, cell in enumerate(line):
+            cell.render_current_unit()
             if cell.rect.collidepoint(mouse):
                 cell.render_mouse_black()
                 for event in events:
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        # логика перемещения персонажей. Пока замороженна, т.к. требует что бы всегда был текущий юнит, который ходит
-                        if cell.unit == None:
-                            if current_unit.is_two_cell:
-                                fifth = 0
+                        if cell.unit == None:    # проверка того, что на клетку можно ходить
+                            if current_unit.is_two_cell:    # вся логика передвижения юнитов
+                                fifth = 0    # дабы юниты занимающие 2 клетки могли ходить в любую позицию, контролируем крайние ходы
                                 if current_unit.is_player2:
-                                    if index == 15:
+                                    if index == 14:
                                         fifth = -1
                                     current_unit.cell.unit = None
                                     current_unit.cell2.unit = None
@@ -209,13 +213,12 @@ while True:
                                 current_unit.cell.unit = None
                                 current_unit.cell = cell
                                 cell.unit = current_unit
-                            if id_current_unit == len(troops):
+                            if id_current_unit == len(troops):    # передача хода следующему
                                 id_current_unit = 0
                             current_unit = troops[id_current_unit]
                             id_current_unit += 1
-                            print(current_unit.name)
             if cell.unit is not None:
-                display.blit(cell.unit.stand.render,(cell.unit.cell.x + cell.unit.stand.x,cell.unit.cell.y + cell.unit.stand.y))
+                display.blit(cell.unit.stand.render,(cell.unit.cell.x + cell.unit.stand.x,cell.unit.cell.y + cell.unit.stand.y))    # рисует всех персонажей на поле исходя из того, где они стоят и поправки на отрисовку (юнитов занимающих 2 клетки рисуем дважды)
 
 
 
