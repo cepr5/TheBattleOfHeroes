@@ -17,6 +17,9 @@ mouse_cursor.set_colorkey((0,255,255))
 cursor = pygame.cursors.Cursor((0,0),mouse_cursor.convert_alpha())
 pygame.mouse.set_cursor(cursor)
 
+current_unit = None
+id_current_unit = 1
+
 # Клетки карты
 class Map:
     def __init__(self,x=0,y=0,is_edge=False):
@@ -48,6 +51,7 @@ class Units:
         self.speed = 0    # скорость юнита
         self.stand = None    # Класс, который знает как правильно рисовать юнита относительно клетки где он стоит
         self.cell = None    # в какой клеточке стоит юнит
+        self.cell2 = None
         self.is_two_cell = False    # юнит занимает две клетки?
         self.is_player2 = is_player2    # юнит справа? (вражеский?)
 
@@ -115,6 +119,7 @@ def if_two_cell(unit,m,enemy):
     if enemy:
         if unit.is_two_cell:
             unit.cell = m[13]
+            unit.cell2 = m[14]
             m[13].unit = unit
             m[14].unit = unit
         else:
@@ -123,6 +128,7 @@ def if_two_cell(unit,m,enemy):
     else:
         if unit.is_two_cell:
             unit.cell = m[1]
+            unit.cell2 = m[0]
             m[1].unit = unit
             m[0].unit = unit
         else:
@@ -138,12 +144,12 @@ def sort(troops):    # сортирует войска по скорости, п
     enemies = sorted(enemies, key=lambda x: x.speed, reverse=True)
     result = []
     i = j = 0
-    while i < len(friends) or j < len(enemies):    # соединяем обе группы, чередуя вражеских и союзных юнитов с одинаковой скоростью
+    while True:    # соединяем обе группы, чередуя вражеских и союзных юнитов с одинаковой скоростью
         if i >= len(friends):    # если закончились союзные юниты
-            result.extend(enemy[j:])
+            result.extend(enemies[j:])
             break
         if j >= len(enemies):    # если закончились вражеские юниты
-            result.extend(friends[j:])
+            result.extend(friends[i:])
             break
         friend = friends[i]    # текущий вражеский и союзный юнит
         enemy = enemies[j]
@@ -161,6 +167,7 @@ def sort(troops):    # сортирует войска по скорости, п
     return result
 
 troops = sort(troops)
+current_unit = troops[0]
 
 while True:
     display.blit(background,(0,0))
@@ -171,16 +178,42 @@ while True:
     events = pygame.event.get()
 
     for line in map:
-        for cell in line:
+        for index, cell in enumerate(line):
             if cell.rect.collidepoint(mouse):
                 cell.render_mouse_black()
                 for event in events:
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        pass
                         # логика перемещения персонажей. Пока замороженна, т.к. требует что бы всегда был текущий юнит, который ходит
-                        # current_unit.cell.unit = None
-                        # current_unit.cell = cell
-                        # cell.unit = current_unit
+                        if cell.unit == None:
+                            if current_unit.is_two_cell:
+                                fifth = 0
+                                if current_unit.is_player2:
+                                    if index == 15:
+                                        fifth = -1
+                                    current_unit.cell.unit = None
+                                    current_unit.cell2.unit = None
+                                    current_unit.cell = line[index + fifth]
+                                    current_unit.cell2 = line[index + 1 + fifth]
+                                    line[index + fifth].unit = current_unit
+                                    line[index + 1 + fifth].unit = current_unit
+                                else:
+                                    if index == 0:
+                                        fifth = 1
+                                    current_unit.cell.unit = None
+                                    current_unit.cell2.unit = None
+                                    current_unit.cell = line[index + fifth]
+                                    current_unit.cell2 = line[index - 1 + fifth]
+                                    line[index + fifth].unit = current_unit
+                                    line[index - 1 + fifth].unit = current_unit
+                            else:
+                                current_unit.cell.unit = None
+                                current_unit.cell = cell
+                                cell.unit = current_unit
+                            if id_current_unit == len(troops):
+                                id_current_unit = 0
+                            current_unit = troops[id_current_unit]
+                            id_current_unit += 1
+                            print(current_unit.name)
             if cell.unit is not None:
                 display.blit(cell.unit.stand.render,(cell.unit.cell.x + cell.unit.stand.x,cell.unit.cell.y + cell.unit.stand.y))
 
