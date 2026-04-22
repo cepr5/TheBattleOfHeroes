@@ -1,6 +1,7 @@
 import pygame, sys
 import Choosing_troops
 import Slicing_sprites
+import Characteristic_unit
 
 display = pygame.display.set_mode((800,600))
 background = pygame.image.load("image/Backgrounds/CmBkGrMt.png").convert_alpha()
@@ -42,18 +43,20 @@ map = [[Map(94,102), Map(136,102), Map(178,102), Map(220,102), Map(262,102), Map
 
 class Units:
     def __init__(self, name, quantity, is_player2 = False):
-        self.name = name
-        self.quantity = quantity
-        self.stand = None
-        self.cell = None
-        self.is_two_cell = False
-        self.is_player2 = is_player2
+        self.name = name    # имя юнита
+        self.quantity = quantity    # количество юнитов
+        self.speed = 0    # скорость юнита
+        self.stand = None    # Класс, который знает как правильно рисовать юнита относительно клетки где он стоит
+        self.cell = None    # в какой клеточке стоит юнит
+        self.is_two_cell = False    # юнит занимает две клетки?
+        self.is_player2 = is_player2    # юнит справа? (вражеский?)
 
 troops = Choosing_troops.start_selecting_troops(display, Units)
 for i in troops:
     print(i.name, i.quantity)
 # нарезка спрайтов и закидывание их в объекты Units
 Slicing_sprites.start(troops)
+Characteristic_unit.start(troops)
 
 # Начальная расстоновка войск (пока что в случаи если игрок поставит 0 войск, прокидывается ошибка. В дальнейшем можно вместо этого высвечивать игроку предупреждение в виде отдельного окна)
 def deploy_troops(troops):
@@ -127,6 +130,37 @@ def if_two_cell(unit,m,enemy):
             m[0].unit = unit
 
 deploy_troops(troops)
+
+def sort(troops):    # сортирует войска по скорости, при этом чередуя вражеских и союзних юнитов с одинаковой скоростью
+    friends = [unit for unit in troops if unit.is_player2 == False]    # разбиваем на две группы
+    enemies = [unit for unit in troops if unit.is_player2 == True]
+    friends = sorted(friends, key=lambda x: x.speed, reverse=True)    # сортируем каждую группу
+    enemies = sorted(enemies, key=lambda x: x.speed, reverse=True)
+    result = []
+    i = j = 0
+    while i < len(friends) or j < len(enemies):    # соединяем обе группы, чередуя вражеских и союзных юнитов с одинаковой скоростью
+        if i >= len(friends):    # если закончились союзные юниты
+            result.extend(enemy[j:])
+            break
+        if j >= len(enemies):    # если закончились вражеские юниты
+            result.extend(friends[j:])
+            break
+        friend = friends[i]    # текущий вражеский и союзный юнит
+        enemy = enemies[j]
+        if friend.speed > enemy.speed:    # добавляем союзного юнита
+            result.append(friend)
+            i += 1
+        elif enemy.speed > friend.speed:    # добавляем вражеского юнита
+            result.append(enemy)
+            j += 1
+        else:                             # если скорости равны, добавляем обоих, тем самым чередуя их
+            result.append(friend)
+            result.append(enemy)
+            i += 1
+            j += 1
+    return result
+
+troops = sort(troops)
 
 while True:
     display.blit(background,(0,0))
