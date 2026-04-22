@@ -55,7 +55,7 @@ for i in troops:
 # нарезка спрайтов и закидывание их в объекты Units
 Slicing_sprites.start(troops)
 
-# Начальная расстоновка войск
+# Начальная расстоновка войск (пока что в случаи если игрок поставит 0 войск, прокидывается ошибка. В дальнейшем можно вместо этого высвечивать игроку предупреждение в виде отдельного окна)
 def deploy_troops(troops):
     troops_p1 = [unit for unit in troops[:7] if unit.name is not None]
     troops_p2 = [unit for unit in troops[7:] if unit.name is not None]
@@ -64,63 +64,67 @@ def deploy_troops(troops):
         raise Exception("Войск не может быть 0!!!")
     elif len(troops_p1) == 1:
         for unit, m in zip(troops_p1, [map[5]]):
-            unit.cell = m[0]
-            m[0].unit = unit
+            if_two_cell(unit,m,False)    # функция определена ниже, она просто проверяет сколько клеток занимает персонаж, 1 или 2? И правильно назначает клетки
     elif len(troops_p1) == 2:
         for unit, m in zip(troops_p1, [map[0], map[10]]):
-            unit.cell = m[0]
-            m[0].unit = unit
+            if_two_cell(unit,m,False) 
     elif len(troops_p1) == 3:
         for unit, m in zip(troops_p1, [map[0], map[5], map[10]]):
-            unit.cell = m[0]
-            m[0].unit = unit
+            if_two_cell(unit,m,False) 
     elif len(troops_p1) == 4:
         for unit, m in zip(troops_p1, [map[0], map[4], map[6], map[10]]):
-            unit.cell = m[0]
-            m[0].unit = unit
+            if_two_cell(unit,m,False) 
     elif len(troops_p1) == 5:
         for unit, m in zip(troops_p1, [map[0],map[2],map[5],map[8],map[10]]):
-            unit.cell = m[0]
-            m[0].unit = unit
+            if_two_cell(unit,m,False) 
     elif len(troops_p1) == 6:
         for unit, m in zip(troops_p1, [map[0], map[2], map[4], map[6], map[8], map[10]]):
-            unit.cell = m[0]
-            m[0].unit = unit
+            if_two_cell(unit,m,False) 
     else:
         for unit, m in zip(troops_p1, [map[0], map[2], map[4], map[5], map[6], map[8], map[10]]):
-            unit.cell = m[0]
-            m[0].unit = unit
+            if_two_cell(unit,m,False) 
 
     if len(troops_p2) == 0:
         raise Exception("Войск не может быть 0!!!")
     elif len(troops_p2) == 1:
         for unit, m in zip(troops_p2, [map[5]]):
-            unit.cell = m[14]
-            m[14].unit = unit
+            if_two_cell(unit,m,True)
     elif len(troops_p2) == 2:
         for unit, m in zip(troops_p2, [map[0], map[10]]):
-            unit.cell = m[14]
-            m[14].unit = unit
+            if_two_cell(unit,m,True)
     elif len(troops_p2) == 3:
         for unit, m in zip(troops_p2, [map[0], map[5], map[10]]):
-            unit.cell = m[14]
-            m[14].unit = unit
+            if_two_cell(unit,m,True)
     elif len(troops_p2) == 4:
         for unit, m in zip(troops_p2, [map[0], map[4], map[6], map[10]]):
-            unit.cell = m[14]
-            m[14].unit = unit
+            if_two_cell(unit,m,True)
     elif len(troops_p2) == 5:
         for unit, m in zip(troops_p2, [map[0],map[2],map[5],map[8],map[10]]):
-            unit.cell = m[14]
-            m[14].unit = unit
+            if_two_cell(unit,m,True)
     elif len(troops_p2) == 6:
         for unit, m in zip(troops_p2, [map[0], map[2], map[4], map[6], map[8], map[10]]):
+            if_two_cell(unit,m,True)
+    else:
+        for unit, m in zip(troops_p2, [map[0], map[2], map[4], map[5], map[6], map[8], map[10]]):
+            if_two_cell(unit,m,True)
+
+def if_two_cell(unit,m,enemy):
+    if enemy:
+        if unit.is_two_cell:
+            unit.cell = m[13]
+            m[13].unit = unit
+            m[14].unit = unit
+        else:
             unit.cell = m[14]
             m[14].unit = unit
     else:
-        for unit, m in zip(troops_p2, [map[0], map[2], map[4], map[5], map[6], map[8], map[10]]):
-            unit.cell = m[14]
-            m[14].unit = unit
+        if unit.is_two_cell:
+            unit.cell = m[1]
+            m[1].unit = unit
+            m[0].unit = unit
+        else:
+            unit.cell = m[0]
+            m[0].unit = unit
 
 deploy_troops(troops)
 
@@ -144,7 +148,7 @@ while True:
                         # current_unit.cell = cell
                         # cell.unit = current_unit
             if cell.unit is not None:
-                display.blit(cell.unit.stand.render,(cell.x + cell.unit.stand.x,cell.y + cell.unit.stand.y))
+                display.blit(cell.unit.stand.render,(cell.unit.cell.x + cell.unit.stand.x,cell.unit.cell.y + cell.unit.stand.y))
 
 
 

@@ -4,22 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b85023f2-0abc-49fa-89fe-43863946b7a6" name="Changes" comment="Полностью функционирующее меню выбора войск">
-      <change afterPath="$PROJECT_DIR$/Slicing_sprites.py" afterDir="false" />
+    <list default="true" id="b85023f2-0abc-49fa-89fe-43863946b7a6" name="Changes" comment="Добавлен модуль Sicing_sprites.py отвечающий за нарезку спрайтов. Там реализовано для всех текущих персонажей отображение как они просто стоят, но пока без отзеркаливания для второго игрока&#10;Так же в main добавлен метод deploy_troops который отвечает за начальную расстановку войск перед битвой. Пока без учёта юнитов занимающих две клетки">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Choosing_troops.py" beforeDir="false" afterPath="$PROJECT_DIR$/Choosing_troops.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/Panel.png" beforeDir="false" afterPath="$PROJECT_DIR$/image/Panel.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/Units/Pikeman.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/Units/Pikeman_goes.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/Units/Pikeman_goes0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/Units/Pikeman_goes1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/Units/Pikeman_goes2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/Units/Pikeman_goes3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/Units/Pikeman_goes4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/Units/Pikeman_goes5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/icon_units/Inferno/Arch_devil.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image/unit_characteristics/Inferno/Arch_devil.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README" beforeDir="false" afterPath="$PROJECT_DIR$/README" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +94,15 @@
       <option name="project" value="LOCAL" />
       <updated>1770047237306</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Добавлен модуль Sicing_sprites.py отвечающий за нарезку спрайтов. Там реализовано для всех текущих персонажей отображение как они просто стоят, но пока без отзеркаливания для второго игрока&#10;Так же в main добавлен метод deploy_troops который отвечает за начальную расстановку войск перед битвой. Пока без учёта юнитов занимающих две клетки">
+      <option name="closed" value="true" />
+      <created>1770296546284</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1770296546284</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -124,6 +120,7 @@
     <MESSAGE value="Initial commit" />
     <MESSAGE value="Добавление первого юнита и максимально примитивная ходьба" />
     <MESSAGE value="Полностью функционирующее меню выбора войск" />
-    <option name="LAST_COMMIT_MESSAGE" value="Полностью функционирующее меню выбора войск" />
+    <MESSAGE value="Добавлен модуль Sicing_sprites.py отвечающий за нарезку спрайтов. Там реализовано для всех текущих персонажей отображение как они просто стоят, но пока без отзеркаливания для второго игрока&#10;Так же в main добавлен метод deploy_troops который отвечает за начальную расстановку войск перед битвой. Пока без учёта юнитов занимающих две клетки" />
+    <option name="LAST_COMMIT_MESSAGE" value="Добавлен модуль Sicing_sprites.py отвечающий за нарезку спрайтов. Там реализовано для всех текущих персонажей отображение как они просто стоят, но пока без отзеркаливания для второго игрока&#10;Так же в main добавлен метод deploy_troops который отвечает за начальную расстановку войск перед битвой. Пока без учёта юнитов занимающих две клетки" />
   </component>
 </project>
