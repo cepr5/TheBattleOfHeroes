@@ -17,8 +17,10 @@ mouse_cursor.set_colorkey((0,255,255))
 cursor = pygame.cursors.Cursor((0,0),mouse_cursor.convert_alpha())
 pygame.mouse.set_cursor(cursor)
 
-current_unit = None
-id_current_unit = 1
+font = pygame.font.Font("font/timesnewromanpsmt.ttf", 11)
+
+current_unit = None    # юнит который ходит в данный момент
+id_current_unit = 1    # счётчик для перемещения по списку
 
 # Клетки карты
 class Map:
@@ -53,12 +55,24 @@ class Units:
     def __init__(self, name, quantity, is_player2 = False):
         self.name = name    # имя юнита
         self.quantity = quantity    # количество юнитов
+        self.quantity_img = pygame.image.load("image/quantity_.png").convert()    # панелька где рисуется количество войск
+        self.quantity_img.set_colorkey((255,255,255))
         self.speed = 0    # скорость юнита
         self.stand = None    # Класс, который знает как правильно рисовать юнита относительно клетки где он стоит
         self.cell = None    # в какой клеточке стоит юнит
         self.cell2 = None
         self.is_two_cell = False    # юнит занимает две клетки?
         self.is_player2 = is_player2    # юнит справа? (вражеский?)
+    def render_quantity(self):    # отрисовка количества войск
+        display.blit(self.quantity_img,(self.cell.x,self.cell.y))
+        if int(self.quantity) >= 1000:
+            display.blit(font.render(self.quantity, True, (255,255,255)), (self.cell.x + 8,self.cell.y + 26))
+        elif int(self.quantity) >= 100:
+            display.blit(font.render(self.quantity, True, (255,255,255)), (self.cell.x + 11,self.cell.y + 26))
+        elif int(self.quantity) >= 10:
+            display.blit(font.render(self.quantity, True, (255,255,255)), (self.cell.x + 14,self.cell.y + 26))
+        else:
+            display.blit(font.render(self.quantity, True, (255,255,255)), (self.cell.x + 16,self.cell.y + 26))
 
 troops = Choosing_troops.start_selecting_troops(display, Units)
 # нарезка спрайтов и закидывание их в объекты Units
@@ -219,6 +233,10 @@ while True:
                             id_current_unit += 1
             if cell.unit is not None:
                 display.blit(cell.unit.stand.render,(cell.unit.cell.x + cell.unit.stand.x,cell.unit.cell.y + cell.unit.stand.y))    # рисует всех персонажей на поле исходя из того, где они стоят и поправки на отрисовку (юнитов занимающих 2 клетки рисуем дважды)
+    for line in map:
+        for cell in line:
+            if cell.unit is not None:
+                cell.unit.render_quantity()
 
 
 
