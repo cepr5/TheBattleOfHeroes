@@ -27,6 +27,8 @@ class Map:
     def __init__(self,x=0,y=0,is_edge=False):
         self.x = x
         self.y = y
+        self.index_x = 0
+        self.index_y = 0
         self.rect = pygame.Rect(self.x,self.y,40,39)
         self.mouse_black = pygame.image.load("image/mouse_black.png").convert_alpha()
         self.mouse_black.set_alpha(100)
@@ -50,6 +52,12 @@ map = [[Map(94,102), Map(136,102), Map(178,102), Map(220,102), Map(262,102), Map
        [Map(94,430), Map(136,430), Map(178,430), Map(220,430), Map(262,430), Map(304,430), Map(346,430), Map(388,430), Map(430,430), Map(472,430), Map(514,430), Map(556,430), Map(598,430), Map(640,430), Map(682,430)],
        [Map(72,471), Map(114,471), Map(156,471), Map(198,471), Map(240,471), Map(282,471), Map(324,471), Map(366,471), Map(408,471), Map(450,471), Map(492,471), Map(534,471), Map(576,471), Map(618,471), Map(660,471)],
        [Map(94,512), Map(136,512), Map(178,512), Map(220,512), Map(262,512), Map(304,512), Map(346,512), Map(388,512), Map(430,512), Map(472,512), Map(514,512), Map(556,512), Map(598,512), Map(640,512), Map(682,512)]]
+
+for i in range(len(map)):
+    for j in range(len(map[i])):
+        map[i][j].index_x = i
+        map[i][j].index_y = j
+
 
 class Units:
     def __init__(self, name, quantity, is_player2 = False):
@@ -197,6 +205,8 @@ while True:
 
     for line in map:
         for index, cell in enumerate(line):
+            if ((cell.index_x - current_unit.cell.index_x) ** 2 + (cell.index_y - current_unit.cell.index_y) ** 2) <= current_unit.speed ** 2:   # надо будет донастроить, это круг, в котором можно делать ходы
+                cell.render_mouse_black()
             cell.render_current_unit()
             if cell.rect.collidepoint(mouse):
                 cell.render_mouse_black()
@@ -233,7 +243,7 @@ while True:
                             id_current_unit += 1
             if cell.unit is not None:
                 display.blit(cell.unit.stand.render,(cell.unit.cell.x + cell.unit.stand.x,cell.unit.cell.y + cell.unit.stand.y))    # рисует всех персонажей на поле исходя из того, где они стоят и поправки на отрисовку (юнитов занимающих 2 клетки рисуем дважды)
-    for line in map:
+    for line in map:    # отображение количества юнитов, к сожалению приходится писать так т.к. иначе другие юниты будут загораживать
         for cell in line:
             if cell.unit is not None:
                 cell.unit.render_quantity()
