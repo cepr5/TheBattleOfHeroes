@@ -2,6 +2,7 @@ import pygame, sys
 import Choosing_troops
 import Slicing_sprites
 import Characteristic_unit
+import settings
 
 display = pygame.display.set_mode((800,600))
 background = pygame.image.load("image/Backgrounds/CmBkGrMt.png").convert_alpha()
@@ -18,6 +19,9 @@ cursor = pygame.cursors.Cursor((0,0),mouse_cursor.convert_alpha())
 pygame.mouse.set_cursor(cursor)
 
 font = pygame.font.Font("font/timesnewromanpsmt.ttf", 11)
+
+# кнопки
+settings_button = pygame.Rect(3, 561, 48, 36)
 
 current_unit = None    # юнит который ходит в данный момент
 id_current_unit = 1    # счётчик для перемещения по списку
@@ -205,7 +209,7 @@ while True:
 
     for line in map:
         for index, cell in enumerate(line):
-            if ((cell.index_x - current_unit.cell.index_x) ** 2 + (cell.index_y - current_unit.cell.index_y) ** 2) <= current_unit.speed ** 2:   # надо будет донастроить, это круг, в котором можно делать ходы
+            if (abs(cell.index_x - current_unit.cell.index_x) + abs(cell.index_y - current_unit.cell.index_y)) <= current_unit.speed:   # надо будет донастроить, это круг, в котором можно делать ходы
                 cell.render_mouse_black()
             cell.render_current_unit()
             if cell.rect.collidepoint(mouse):
@@ -243,10 +247,53 @@ while True:
                             id_current_unit += 1
             if cell.unit is not None:
                 display.blit(cell.unit.stand.render,(cell.unit.cell.x + cell.unit.stand.x,cell.unit.cell.y + cell.unit.stand.y))    # рисует всех персонажей на поле исходя из того, где они стоят и поправки на отрисовку (юнитов занимающих 2 клетки рисуем дважды)
+
     for line in map:    # отображение количества юнитов, к сожалению приходится писать так т.к. иначе другие юниты будут загораживать
         for cell in line:
             if cell.unit is not None:
                 cell.unit.render_quantity()
+    
+    for event in events:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if settings_button.collidepoint(mouse):
+                index_current_unit = troops.index(current_unit)
+                sel = settings.start(display, troops, index_current_unit)
+                if sel is not None:                               # загрузка сохранения
+                    print(sel)
+
+                    troops = []
+                    names = sel[2].split(",")
+                    quantities = sel[3].split(",")
+                    is_player2s = sel[4].split(",")
+                    cellsx = sel[5].split(",")
+                    cellsy = sel[6].split(",")
+                    cell2sx = sel[7].split(",")
+                    cell2sy = sel[8].split(",")
+                    index_current_unit = sel[9]
+                    for i in range(len(names)):
+                        if is_player2s[i] == "True":
+                            troops.append(Units(names[i],quantities[i],True))
+                        else:
+                            troops.append(Units(names[i],quantities[i]))
+                    Slicing_sprites.start(troops)
+                    Characteristic_unit.start(troops)
+
+                    for line in map:
+                        for cell in line:
+                            cell.unit = None
+
+                    for x,y,x2,y2,troop in zip(cellsx, cellsy, cell2sx, cell2sy, troops):
+                        for index, line in enumerate(map):
+                            for index2, cell in enumerate(line):
+                                if index == int(x) and index2 == int(y):
+                                    troop.cell = cell
+                                    cell.unit = troop
+                                if index == int(x2) and index2 == int(y2):
+                                    troop.cell2 = cell
+                                    cell.unit = troop
+
+                    current_unit = troops[index_current_unit]
+
 
 
 
